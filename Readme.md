@@ -44,3 +44,5 @@ python -m app
 ```
 ### Note 
 This is just one part of our module and it also connects various modules as defined in the solution which is implemented with a hardware with each modules integrated.
+### PPT Link
+https://docs.google.com/presentation/d/1SssbzN1PgYoNdnDDV-YT6I5Bmp6WgHyLywKsYsEGQ40/edit?usp=sharing
