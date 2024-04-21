@@ -14,7 +14,7 @@
 [4.Santhosh M]
 
 ### Link to Project
-[Link of project]([live_link](https://drmav-blockchain.vercel.app/))
+[Link of project](https://drmav-blockchain.vercel.app/)
 
 ### How it Works ?
 Incorporating QR codes into prescriptions streamlines the medication management process for both healthcare providers and patients. Here's how it works:
