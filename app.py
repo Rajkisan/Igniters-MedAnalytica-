@@ -95,8 +95,8 @@ def send_email_gmail(prescription_content, recipient_email):
     # Set up SMTP server (Gmail in this example)
     smtp_server = 'smtp.gmail.com'
     smtp_port = 587  # TLS Port
-    sender_email = 'rajkisanssvrs@gmail.com'
-    sender_password = 'fpld kblz jofn jbue'  # Consider using environment variables for security
+    sender_email = ''
+    sender_password = ''  # Consider using environment variables for security
 
     # Create a connection to the SMTP server
     server = smtplib.SMTP(smtp_server, smtp_port)
