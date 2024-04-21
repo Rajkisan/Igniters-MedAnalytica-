@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Prescription</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .prescription-section,
+        .inventory-section {
+            width: 48%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .prescription-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        .prescription-table th, .prescription-table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        .tablet-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .tablet-box {
+            border: 1px solid #ccc;
+            padding: 5px;
+            cursor: pointer;
+            text-align: center;
+            width: 80px;
+            margin-right: 10px;
+            position: relative;
+        }
+        .tablet-options {
+            display: none;
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            z-index: 1;
+        }
+        .tablet-box.active .tablet-options {
+            display: block;
+        }
+    </style>
+    <script>
+        function addToPrescription(tabletName) {
+            var tabletBox = document.getElementById(tabletName);
+
+            if (activeTabletOptions) {
+                var prevTabletBox = document.getElementById(activeTabletOptions);
+                prevTabletBox.classList.remove("active");
+            }
+
+            var existingOptions = document.getElementById(`${tabletName}-options`);
+            if (existingOptions) {
+                existingOptions.remove();
+            }
+
+            var tabletOptions = document.createElement("div");
+            tabletOptions.className = "tablet-options";
+            tabletOptions.id = `${tabletName}-options`;
+            tabletOptions.innerHTML = `
+                <label for="${tabletName}-mg">Select mg:</label>
+                <select name="${tabletName}-mg" id="${tabletName}-mg">
+                    <option value="500">500mg</option>
+                    <option value="200">200mg</option>
+                    <option value="325">325mg</option>
+                    <option value="10">10mg</option>
+                </select>
+                <label for="${tabletName}-quantity">Quantity:</label>
+                <input type="number" id="${tabletName}-quantity" name="${tabletName}-quantity" value="1" min="1">
+                <button onclick="addPrescriptionFromOptions('${tabletName}')">OK</button>
+                <button onclick="cancelSelection('${tabletName}')">Cancel</button>
+            `;
+            tabletBox.appendChild(tabletOptions);
+            tabletBox.classList.add("active");
+            
+            activeTabletOptions = `${tabletName}-options`;
+
+            document.body.addEventListener('click', function(event) {
+                if (!tabletBox.contains(event.target)) {
+                    tabletBox.classList.remove("active");
+                    activeTabletOptions = null;
+                }
+            });
+
+            tabletOptions.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        }
+
+        function addPrescriptionFromOptions(tabletName) {
+            var mgValue = document.getElementById(`${tabletName}-mg`).value;
+            var quantityValue = document.getElementById(`${tabletName}-quantity`).value;
+            var prescriptionTable = document.getElementById("prescription-table");
+            var newRow = prescriptionTable.insertRow(-1);
+            var sNoCell = newRow.insertCell(0);
+            var quantityCell = newRow.insertCell(1);
+            var mgCell = newRow.insertCell(2);
+            var tabletCell = newRow.insertCell(3);
+            rowCount = prescriptionTable.rows.length;
+            sNoCell.innerText = (rowCount-1) + "\n"; // Add new line before each S.No
+            quantityCell.innerText = quantityValue;
+            mgCell.innerText = mgValue + 'mg';
+            tabletCell.innerText = tabletName;
+
+            var tabletBox = document.getElementById(tabletName);
+            tabletBox.classList.remove("active");
+            activeTabletOptions = null;
+        }
+
+        function cancelSelection(tabletName) {
+            var tabletBox = document.getElementById(tabletName);
+            tabletBox.classList.remove("active");
+            activeTabletOptions = null;
+        }
+
+        function combinePrescriptionData() {
+        var prescriptionTable = document.getElementById("prescription-table");
+        var content = "";
+        for (var i = 1; i < prescriptionTable.rows.length; i++) {
+            var row = prescriptionTable.rows[i];
+            content += row.cells[0].innerText.trim() + " ";
+            // console.log(content,i) // Add serial number
+            for (var j = 1; j < row.cells.length; j++) {
+                content += row.cells[j].innerText.trim() + " "; // Add data
+            }
+            content += "\n"; // Add a new line after each row
+            console.log(content)
+        }
+        document.getElementById("content").value = content;
+    }
+
+        var activeTabletOptions = null;
+    </script>
+</head>
+<body>
+    <h1>Create Prescription</h1>
+    <div class="container">
+        <div class="prescription-section">
+            <h2>Prescription Section</h2>
+            <form method="post" action="/create_prescription" id="prescription-form">
+                <table id="prescription-table" class="prescription-table">
+                    <tr>
+                        <th>S. No</th>
+                        <th>Quantity</th>
+                        <th>mg</th>
+                        <th>Tablet Name</th>
+                    </tr>
+                </table>
+                <textarea id="content" name="content" style="display: none;"></textarea>
+                <input type="button" value="Combine Data" onclick="combinePrescriptionData()">
+                <input type="submit" value="Create Prescription">
+            </form>
+        </div>
+        <div class="inventory-section">
+            <h2>Inventory Section</h2>
+            <div class="tablet-list">
+                <div class="tablet-box" id="Paracetamol" onclick="addToPrescription('Paracetamol')">Paracetamol</div>
+                <div class="tablet-box" id="Ibuprofen" onclick="addToPrescription('Ibuprofen')">Ibuprofen</div>
+                <div class="tablet-box" id="Aspirin" onclick="addToPrescription('Aspirin')">Aspirin</div>
+                <div class="tablet-box" id="Loratadine" onclick="addToPrescription('Loratadine')">Loratadine</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
