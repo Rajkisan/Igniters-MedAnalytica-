@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prescription Details</title>
+    <title>Prescription QR Code Generator</title>
     <style>
         body {
             background: linear-gradient(to right, #f9a7ff, #a6a1f8);
@@ -19,24 +19,8 @@
             flex-direction: column; /* Added to stack elements vertically */
         }
 
-        h1 {
+        .content {
             margin-bottom: 20px;
-        }
-
-        form {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        input[type="text"] {
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            margin-bottom: 10px;
         }
 
         button {
@@ -58,31 +42,21 @@
             background-color: #7a52b7; /* Darker purple color on hover */
         }
 
+        a {
+            text-decoration: none;
+        }
+
         button:focus {
             outline: none;
         }
     </style>
 </head>
 <body>
-    <h1>Prescription Details</h1>
-
-    <form id="markServedForm">
-        <label for="verificationInput">Enter Verification Code:</label>
-        <input type="text" id="verificationInput" name="verificationCode">
-        <button type="button" onclick="verifyCode()">Verify Code</button>
-    </form>
-    <script>
-        function verifyCode() {
-            var inputCode = document.getElementById("verificationInput").value;
-            var prescriptionCode = "{{ prescription[2] }}"; // Get prescription code from backend
-            if (inputCode === prescriptionCode) {
-                // Code matches, mark as served
-                window.location.href = "{{ url_for('prescription_details2', prescription_id=prescription[0]) }}";
-            } else {
-                // Code does not match, display error or take appropriate action
-                alert("Verification code does not match.");
-            }
-        }
-    </script>
+    <div class="content">
+        <h1>Welcome to Prescription QR Code Generator</h1>
+    </div>
+    <div>
+        <a href="{{ url_for('create_prescription') }}"><button>Create Prescription</button></a>
+    </div>
 </body>
 </html>

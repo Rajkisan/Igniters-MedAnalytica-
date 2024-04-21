@@ -5,58 +5,135 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Prescription</title>
     <style>
-        .container {
-            display: flex;
-            justify-content: space-between;
-        }
-        .prescription-section,
-        .inventory-section {
-            width: 48%;
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 20px;
-        }
-        .prescription-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 10px;
-        }
-        .prescription-table th, .prescription-table td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-        }
-        .tablet-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .tablet-box {
-            border: 1px solid #ccc;
-            padding: 5px;
-            cursor: pointer;
-            text-align: center;
-            width: 80px;
-            margin-right: 10px;
-            position: relative;
-        }
-        .tablet-options {
-            display: none;
-            position: absolute;
-            top: calc(100% + 5px);
-            left: 0;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            padding: 10px;
-            z-index: 1;
-        }
-        .tablet-box.active .tablet-options {
-            display: block;
-        }
+
+    body {
+    background: linear-gradient(to bottom, #965dcb, #ec60d4);
+    color: #eee;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.prescription-section,
+.inventory-section {
+    width: 48%;
+    border: 1px solid #444;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.prescription-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+.prescription-table th, .prescription-table td {
+    border: 1px solid #444;
+    padding: 12px;
+    text-align: left;
+}
+
+.tablet-list {
+    column-count: 3;
+    column-gap: 20px;
+}
+
+.tablet-box {
+    border: 2px solid transparent; /* Add transparent border */
+    background-color: #de7de3; /* Dark purple color */
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    position: relative;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Add border-color to transition */
+    border-radius: 15px; /* Rounded corners */
+}
+
+.tablet-box:hover {
+    background-color: #6a5acd; /* Lighter purple color on hover */
+}
+
+.tablet-box.clicked {
+    border-color: #fff; /* White border color when clicked */
+}
+
+.tablet-options {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 20px;
+    z-index: 1;
+    width: 200px;
+    text-align: left;
+    border-radius: 10px; /* Rounded corners for options box */
+}
+
+.tablet-box.active .tablet-options {
+    display: block;
+}
+
+.tablet-options button {
+    display: block;
+    margin-top: 10px;
+    width: 100%;
+    padding: 8px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.tablet-options button:hover {
+    background-color: #6a5acd; /* Lighter purple color on button hover */
+    color: #fff;
+}
+
+.glow {
+    text-shadow: 0 0 10px #00f, 0 0 20px #0ff, 0 0 30px #0f0, 0 0 40px #ff0, 0 0 50px #f00, 0 0 60px #0ff, 0 0 70px #00f; /* Glow effect */
+}
+
+/* Add style to the buttons */
+input[type="button"],
+input[type="submit"] {
+    background-color: #6a5acd; /* Purple color */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 18px; /* Increased font size */
+    cursor: pointer;
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s, color 0.3s; /* Transition effect */
+}
+
+/* Change button color on hover */
+input[type="button"]:hover,
+input[type="submit"]:hover {
+    background-color: #8a2be2; /* Lighter purple color on hover */
+}
+
+/* Adjust margin between buttons */
+input[type="button"] + input[type="submit"] {
+    margin-left: 10px;
+}
+
+/* Style the font color of the Quantity and mg labels */
+.tablet-options label {
+    color: #333; /* Dark grey color */
+    font-weight: bold; /* Make the labels bold */
+}
+
     </style>
     <script>
         function addToPrescription(tabletName) {
             var tabletBox = document.getElementById(tabletName);
+            var tabletRect = tabletBox.getBoundingClientRect();
+            var windowHeight = window.innerHeight;
 
             if (activeTabletOptions) {
                 var prevTabletBox = document.getElementById(activeTabletOptions);
@@ -71,6 +148,10 @@
             var tabletOptions = document.createElement("div");
             tabletOptions.className = "tablet-options";
             tabletOptions.id = `${tabletName}-options`;
+            var topPosition = (tabletRect.top > windowHeight - 200) ? 'auto' : '100%';
+            var bottomPosition = (tabletRect.top > windowHeight - 200) ? '100%' : 'auto';
+            tabletOptions.style.top = topPosition;
+            tabletOptions.style.bottom = bottomPosition;
             tabletOptions.innerHTML = `
                 <label for="${tabletName}-mg">Select mg:</label>
                 <select name="${tabletName}-mg" id="${tabletName}-mg">
@@ -128,26 +209,26 @@
         }
 
         function combinePrescriptionData() {
-        var prescriptionTable = document.getElementById("prescription-table");
-        var content = "";
-        for (var i = 1; i < prescriptionTable.rows.length; i++) {
-            var row = prescriptionTable.rows[i];
-            content += row.cells[0].innerText.trim() + " ";
-            // console.log(content,i) // Add serial number
-            for (var j = 1; j < row.cells.length; j++) {
-                content += row.cells[j].innerText.trim() + " "; // Add data
+            var prescriptionTable = document.getElementById("prescription-table");
+            var content = "";
+            for (var i = 1; i < prescriptionTable.rows.length; i++) {
+                var row = prescriptionTable.rows[i];
+                content += row.cells[0].innerText.trim() + " ";
+                // console.log(content,i) // Add serial number
+                for (var j = 1; j < row.cells.length; j++) {
+                    content += row.cells[j].innerText.trim() + " "; // Add data
+                }
+                content += "\n"; // Add a new line after each row
+                console.log(content)
             }
-            content += "\n"; // Add a new line after each row
-            console.log(content)
+            document.getElementById("content").value = content;
         }
-        document.getElementById("content").value = content;
-    }
 
         var activeTabletOptions = null;
     </script>
 </head>
 <body>
-    <h1>Create Prescription</h1>
+    <h1 class="glow">Create Prescription</h1>
     <div class="container">
         <div class="prescription-section">
             <h2>Prescription Section</h2>
@@ -160,6 +241,8 @@
                         <th>Tablet Name</th>
                     </tr>
                 </table>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
                 <textarea id="content" name="content" style="display: none;"></textarea>
                 <input type="button" value="Combine Data" onclick="combinePrescriptionData()">
                 <input type="submit" value="Create Prescription">
@@ -172,6 +255,62 @@
                 <div class="tablet-box" id="Ibuprofen" onclick="addToPrescription('Ibuprofen')">Ibuprofen</div>
                 <div class="tablet-box" id="Aspirin" onclick="addToPrescription('Aspirin')">Aspirin</div>
                 <div class="tablet-box" id="Loratadine" onclick="addToPrescription('Loratadine')">Loratadine</div>
+                <div class="tablet-box" id="Omeprazole" onclick="addToPrescription('Omeprazole')">Omeprazole</div>
+                <div class="tablet-box" id="Amoxicillin" onclick="addToPrescription('Amoxicillin')">Amoxicillin</div>
+                <div class="tablet-box" id="Ciprofloxacin" onclick="addToPrescription('Ciprofloxacin')">Ciprofloxacin</div>
+                <div class="tablet-box" id="Diazepam" onclick="addToPrescription('Diazepam')">Diazepam</div>
+                <div class="tablet-box" id="Doxycycline" onclick="addToPrescription('Doxycycline')">Doxycycline</div>
+                <div class="tablet-box" id="Metformin" onclick="addToPrescription('Metformin')">Metformin</div>
+                <div class="tablet-box" id="Amlodipine" onclick="addToPrescription('Amlodipine')">Amlodipine</div>
+                <div class="tablet-box" id="Prednisone" onclick="addToPrescription('Prednisone')">Prednisone</div>
+                <div class="tablet-box" id="Atorvastatin" onclick="addToPrescription('Atorvastatin')">Atorvastatin</div>
+                <div class="tablet-box" id="Warfarin" onclick="addToPrescription('Warfarin')">Warfarin</div>
+                <div class="tablet-box" id="Hydrochlorothiazide" onclick="addToPrescription('Hydrochlorothiazide')">Hydrochlorothiazide</div>
+                <div class="tablet-box" id="Acetaminophen" onclick="addToPrescription('Acetaminophen')">Acetaminophen</div>
+                <div class="tablet-box" id="Simvastatin" onclick="addToPrescription('Simvastatin')">Simvastatin</div>
+                <div class="tablet-box" id="Lisinopril" onclick="addToPrescription('Lisinopril')">Lisinopril</div>
+                <div class="tablet-box" id="Esomeprazole" onclick="addToPrescription('Esomeprazole')">Esomeprazole</div>
+                <div class="tablet-box" id="Levothyroxine" onclick="addToPrescription('Levothyroxine')">Levothyroxine</div>
+                <div class="tablet-box" id="Alprazolam" onclick="addToPrescription('Alprazolam')">Alprazolam</div>
+                <div class="tablet-box" id="Cephalexin" onclick="addToPrescription('Cephalexin')">Cephalexin</div>
+                <div class="tablet-box" id="Montelukast" onclick="addToPrescription('Montelukast')">Montelukast</div>
+                <div class="tablet-box" id="Amitriptyline" onclick="addToPrescription('Amitriptyline')">Amitriptyline</div>
+                <div class="tablet-box" id="Clonazepam" onclick="addToPrescription('Clonazepam')">Clonazepam</div>
+                <div class="tablet-box" id="Metoprolol" onclick="addToPrescription('Metoprolol')">Metoprolol</div>
+                <div class="tablet-box" id="Furosemide" onclick="addToPrescription('Furosemide')">Furosemide</div>
+                <div class="tablet-box" id="Fluoxetine" onclick="addToPrescription('Fluoxetine')">Fluoxetine</div>
+                <div class="tablet-box" id="Tramadol" onclick="addToPrescription('Tramadol')">Tramadol</div>
+                <div class="tablet-box" id="Sertraline" onclick="addToPrescription('Sertraline')">Sertraline</div>
+                <div class="tablet-box" id="Gabapentin" onclick="addToPrescription('Gabapentin')">Gabapentin</div>
+                <div class="tablet-box" id="Cetirizine" onclick="addToPrescription('Cetirizine')">Cetirizine</div>
+                <div class="tablet-box" id="Pantoprazole" onclick="addToPrescription('Pantoprazole')">Pantoprazole</div>
+                <div class="tablet-box" id="Losartan" onclick="addToPrescription('Losartan')">Losartan</div>
+                <div class="tablet-box" id="Venlafaxine" onclick="addToPrescription('Venlafaxine')">Venlafaxine</div>
+                <div class="tablet-box" id="Gabapentin" onclick="addToPrescription('Gabapentin')">Gabapentin</div>
+                <div class="tablet-box" id="Mirtazapine" onclick="addToPrescription('Mirtazapine')">Mirtazapine</div>
+                <div class="tablet-box" id="Trazodone" onclick="addToPrescription('Trazodone')">Trazodone</div>
+                <div class="tablet-box" id="Hydroxyzine" onclick="addToPrescription('Hydroxyzine')">Hydroxyzine</div>
+                <div class="tablet-box" id="Escitalopram" onclick="addToPrescription('Escitalopram')">Escitalopram</div>
+                <div class="tablet-box" id="Carvedilol" onclick="addToPrescription('Carvedilol')">Carvedilol</div>
+                <div class="tablet-box" id="Azithromycin" onclick="addToPrescription('Azithromycin')">Azithromycin</div>
+                <div class="tablet-box" id="Folic Acid" onclick="addToPrescription('Folic Acid')">Folic Acid</div>
+                <div class="tablet-box" id="Metronidazole" onclick="addToPrescription('Metronidazole')">Metronidazole</div>
+                <div class="tablet-box" id="Naproxen" onclick="addToPrescription('Naproxen')">Naproxen</div>
+                <div class="tablet-box" id="Tamsulosin" onclick="addToPrescription('Tamsulosin')">Tamsulosin</div>
+                <div class="tablet-box" id="Clarithromycin" onclick="addToPrescription('Clarithromycin')">Clarithromycin</div>
+                <div class="tablet-box" id="Memantine" onclick="addToPrescription('Memantine')">Memantine</div>
+                <div class="tablet-box" id="Lisinopril" onclick="addToPrescription('Lisinopril')">Lisinopril</div>
+                <div class="tablet-box" id="Oxycodone" onclick="addToPrescription('Oxycodone')">Oxycodone</div>
+                <div class="tablet-box" id="Risperidone" onclick="addToPrescription('Risperidone')">Risperidone</div>
+                <div class="tablet-box" id="Ranitidine" onclick="addToPrescription('Ranitidine')">Ranitidine</div>
+                <div class="tablet-box" id="Bupropion" onclick="addToPrescription('Bupropion')">Bupropion</div>
+                <div class="tablet-box" id="Methylprednisolone" onclick="addToPrescription('Methylprednisolone')">Methylprednisolone</div>
+                <div class="tablet-box" id="Warfarin" onclick="addToPrescription('Warfarin')">Warfarin</div>
+                <div class="tablet-box" id="Aripiprazole" onclick="addToPrescription('Aripiprazole')">Aripiprazole</div>
+                <div class="tablet-box" id="Fluticasone" onclick="addToPrescription('Fluticasone')">Fluticasone</div>
+                <div class="tablet-box" id="Valacyclovir" onclick="addToPrescription('Valacyclovir')">Valacyclovir</div>
+                <div class="tablet-box" id="Citalopram" onclick="addToPrescription('Citalopram')">Citalopram</div>
+                
             </div>
         </div>
     </div>

@@ -23,20 +23,34 @@
             margin-bottom: 20px;
         }
 
-        form {
-            margin-bottom: 20px;
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
         }
 
-        label {
-            display: block;
-            margin-bottom: 10px;
+        .blur {
+            filter: blur(5px); /* Adjust blur intensity as needed */
         }
 
-        input[type="text"] {
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            margin-bottom: 10px;
+        p {
+            margin-top: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #a679e5; /* Purple color */
+            color: white;
         }
 
         button {
@@ -65,24 +79,30 @@
 </head>
 <body>
     <h1>Prescription Details</h1>
-
-    <form id="markServedForm">
-        <label for="verificationInput">Enter Verification Code:</label>
-        <input type="text" id="verificationInput" name="verificationCode">
-        <button type="button" onclick="verifyCode()">Verify Code</button>
-    </form>
-    <script>
-        function verifyCode() {
-            var inputCode = document.getElementById("verificationInput").value;
-            var prescriptionCode = "{{ prescription[2] }}"; // Get prescription code from backend
-            if (inputCode === prescriptionCode) {
-                // Code matches, mark as served
-                window.location.href = "{{ url_for('prescription_details2', prescription_id=prescription[0]) }}";
-            } else {
-                // Code does not match, display error or take appropriate action
-                alert("Verification code does not match.");
-            }
-        }
-    </script>
+    <table>
+        <thead>
+            <tr>
+                <th>S. No</th>
+                <th>Quantity</th>
+                <th>mg</th>
+                <th>Tablet Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in prescription[1].split('\n') %}
+                {% set parts = line.split() %}
+                <tr class="{% if prescription[3] %}blur{% endif %}">
+                    <td>{{ parts[0] }}</td>
+                    <td>{{ parts[1] }}</td>
+                    <td>{{ parts[2] }}</td>
+                    <td>{{ ' '.join(parts[3:]) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p>Served: {% if prescription[3] %}Yes{% else %}No{% endif %}</p>
+    {% if not prescription[3] %}
+    <a href="{{ url_for('mark_served', prescription_id=prescription[0]) }}"><button>Mark as Served</button></a>
+    {% endif %}
 </body>
 </html>
