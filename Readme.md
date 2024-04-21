@@ -38,6 +38,7 @@ Deployment: Vercel, FreeMySQL
 
 
 ### How to Run
+Update the lines for gmail id and password and then
 Just visit the live link or run 
 ```
 python -m app
